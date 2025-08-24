@@ -17,13 +17,44 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
 </head>
 <body class="bg-light">
-
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
     <div class="container">
       <a class="navbar-brand" href="#">📚 Planejador de Estudos</a>
     </div>
   </nav>
+<!-- Modal de matéria existente -->
+<div class="modal fade" id="exiMateriaMsg" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert">
+          ❌ <strong>Erro:</strong> Já existe uma matéria cadastrada com essas informações.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="exiMateriaBTN" data-bs-dismiss="modal">Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de matéria vazia -->
+<div class="modal fade" id="campVazioMsg" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="alert alert-danger" role="alert">
+          ❌ <strong>Erro:</strong> Verifique os campos pedidos.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="campVazioBTN" data-bs-dismiss="modal">Voltar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <div class="container">
     <!-- Formulário de Tarefa -->

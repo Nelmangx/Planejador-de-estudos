@@ -117,3 +117,24 @@ tarefas.forEach((user, index) => {
                 card.appendChild(cardContent);
                 this.listaTarefas.appendChild(card);
             });
+
+
+
+  
+  <!-- Modal de máteria existente -->
+  <div class="modal fade" id="exiMateriaMsg" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="">
+    <div class="alert alert-danger" role="alert">
+  ❌ <strong>Erro:</strong> Ocorreu um problema ao processar sua solicitação. Tente novamente mais tarde.
+</div>
+
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="">voltar</button>
+      </div>
+  </div>
+
+    <!-- Modal de campos vazios -->
+  <div class="modal fade" id="campVazioMsg" tabindex="-1" aria-labelledby="modalEditarLabel" aria-hidden="true">
+      <div class="modal-footer">
+          <button type="submit" class="btn btn-primary" id="">voltar</button>
+      </div>
+  </div>

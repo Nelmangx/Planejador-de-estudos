@@ -31,34 +31,27 @@ const criaMateria = (materia, topico, data, tempo) => {
                 const novoTempo = document.getElementById("editarTempo").value;
                 console.log(novaMateria, novoTopico, novaData, novoTempo)
                 
-                if (!editaMateria[i].materia) {
-                    editaMateria[i].materia = editaMateria[i].materia;
-                    console.log(editaMateria[i].materia)
-                } else {
-                    editaMateria[i].materia = novaMateria;
-                    console.log(editaMateria[i])
-                }
-                
-                if (!editaMateria[i].topico){
-                    editaMateria[i].topico = editaMateria[i].topico;
-                } else {
-                    editaMateria[i].topico = novoTopico;
+                if (novaMateria?.trim()) {
+                editaMateria[i].materia = novaMateria.trim();
                 }
 
-                if (!editaMateria[i].data) {
-                    editaMateria[i].data = editaMateria[i].data;
-                } else {
-                    editaMateria[i].data = novaData
+                if (novoTopico?.trim()) {
+                editaMateria[i].topico = novoTopico.trim();
                 }
 
-                if (!editaMateria[i].tempo) {
-                    editaMateria[i].tempo = editaMateria[i].tempo;
-                } else {
-                    editaMateria[i].tempo = novoTempo;
+                if (novaData) {
+                editaMateria[i].data = novaData;
                 }
+
+                if (novoTempo) {
+                editaMateria[i].tempo = novoTempo;
+                }
+
                 localStorage.setItem("novaTarefa", JSON.stringify(editaMateria))
-
-                modal.hide()
+                const camposVazios = !editaMateria.materia || !editaMateria.topico || !editaMateria.data || !editaMateria.tempo;
+                if (!camposVazios) {modal.hide();}
+                this.listaTarefas.innerHTML = "";
+                this.mostraTarefa();
 
             })
         },
@@ -80,7 +73,12 @@ const criaMateria = (materia, topico, data, tempo) => {
                 const camposVazios = !novaTarefa.materia || !novaTarefa.topico || !novaTarefa.data || !novaTarefa.tempo;
 
                 if (camposVazios) {
-                    window.alert("Preencha todos os campos da tarefa!");
+                    const campVazio = new bootstrap.Modal(document.getElementById("campVazioMsg"));
+                    campVazio.show();
+                    const campVazioBTN = document.getElementById("campVazioBTN");
+                    campVazioBTN.addEventListener("click", () => {
+                        window.location.reload();
+                    })
                     return;
                 }
 
@@ -91,7 +89,12 @@ const criaMateria = (materia, topico, data, tempo) => {
                 );
 
                 if (existe) {
-                    window.alert("Essa tarefa já existe!");
+                    const exiMateria = new bootstrap.Modal(document.getElementById("exiMateriaMsg"));
+                    exiMateria.show();
+                    const exiMateriaBTN = document.getElementById("exiMateriaBTN");
+                    exiMateriaBTN.addEventListener("click", () => {
+                        window.location.reload();
+                    })
                     return;
                 }
 
