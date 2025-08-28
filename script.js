@@ -1,209 +1,232 @@
-const criaMateria = (materia, topico, data, tempo) => {
-    console.log("materia criada");
-    console.log(materia, topico, data, tempo);
+class SistemaTarefas {
+    #listaTarefas = document.getElementById("listaTarefas");
+    #modal = document.getElementById('modalEditar');
 
-    return {
-        listaTarefas: document.getElementById("listaTarefas"),
+    constructor(materia = "", topico = "", data = "", tempo = "") {
+        this.materia = materia;
+        this.topico = topico;
+        this.data = data;
+        this.tempo = tempo;
+    }
 
-        modal: document.getElementById('modalEditar'),
+    // Getter para acessar os dados da tarefa
+    get tarefas() {
+        return {
+            materia: this.materia,
+            topico: this.topico,
+            data: this.data,
+            tempo: this.tempo
+        };
+    }
 
-        tarefas: {
-            materia,
-            topico,
-            data,
-            tempo
-        },
+    #obterTarefas() {
+        return JSON.parse(localStorage.getItem("novaTarefa")) || [];
+    }
 
+    #salvarTarefas(tarefas) {
+        localStorage.setItem("novaTarefa", JSON.stringify(tarefas));
+    }
 
-        editTarefa(i) {
-            const editaMateria = (JSON.parse(localStorage.getItem("novaTarefa")) || []);
+    #validarCampos(tarefa) {
+        return tarefa.materia?.trim() && 
+               tarefa.topico?.trim() && 
+               tarefa.data && 
+               tarefa.tempo;
+    }
 
-            const modal = new bootstrap.Modal(document.getElementById('modalEditar'));
-            modal.show();
+    #mostrarModal(modalId, btnId) {
+        const modal = new bootstrap.Modal(document.getElementById(modalId));
+        modal.show();
+        const btn = document.getElementById(btnId);
+        btn.addEventListener("click", () => {
+            window.location.reload();
+        });
+    }
 
+    editarTarefa(index) {
+        const tarefas = this.#obterTarefas();
+        const modal = new bootstrap.Modal(this.#modal);
+        modal.show();
+
+        const salvaBTN = document.getElementById("salvaBTN");
+        
+        // Remove event listeners anteriores para evitar duplicação
+        const novoSalvaBTN = salvaBTN.cloneNode(true);
+        salvaBTN.parentNode.replaceChild(novoSalvaBTN, salvaBTN);
+        
+        novoSalvaBTN.addEventListener("click", () => {
+            console.log("Salvando edição");
             
-            const salvaBTN = document.getElementById("salvaBTN");
-            salvaBTN.addEventListener("click", () => {
-                console.log("Salvando edição")
-                const novaMateria = document.getElementById("editarMateria").value;
-                const novoTopico = document.getElementById("editarTopico").value;
-                const novaData = document.getElementById("editarData").value;
-                const novoTempo = document.getElementById("editarTempo").value;
-                console.log(novaMateria, novoTopico, novaData, novoTempo)
-                
-                if (novaMateria?.trim()) {
-                editaMateria[i].materia = novaMateria.trim();
-                }
+            const novaMateria = document.getElementById("editarMateria").value;
+            const novoTopico = document.getElementById("editarTopico").value;
+            const novaData = document.getElementById("editarData").value;
+            const novoTempo = document.getElementById("editarTempo").value;
+            
+            console.log(novaMateria, novoTopico, novaData, novoTempo);
 
-                if (novoTopico?.trim()) {
-                editaMateria[i].topico = novoTopico.trim();
-                }
-
-                if (novaData) {
-                editaMateria[i].data = novaData;
-                }
-
-                if (novoTempo) {
-                editaMateria[i].tempo = novoTempo;
-                }
-
-                localStorage.setItem("novaTarefa", JSON.stringify(editaMateria))
-                const camposVazios = !editaMateria.materia || !editaMateria.topico || !editaMateria.data || !editaMateria.tempo;
-                if (!camposVazios) {modal.hide();}
-                this.listaTarefas.innerHTML = "";
-                this.mostraTarefa();
-
-            })
-        },
-
-
-        excluirTarefa(i) {
-            const tarefa = (JSON.parse(localStorage.getItem("novaTarefa")) || []).filter(u => u);
-            tarefa.splice(i, 1);
-            localStorage.setItem("novaTarefa", JSON.stringify(tarefa));
-        },
-
-
-        enviaTarefa() {
-            try {
-                console.log("tarefa enviada");
-                const tarefasExistentes = (JSON.parse(localStorage.getItem("novaTarefa")) || []).filter(u => u);
-                const novaTarefa = this.tarefas;
-
-                const camposVazios = !novaTarefa.materia || !novaTarefa.topico || !novaTarefa.data || !novaTarefa.tempo;
-
-                if (camposVazios) {
-                    const campVazio = new bootstrap.Modal(document.getElementById("campVazioMsg"));
-                    campVazio.show();
-                    const campVazioBTN = document.getElementById("campVazioBTN");
-                    campVazioBTN.addEventListener("click", () => {
-                        window.location.reload();
-                    })
-                    return;
-                }
-
-                const existe = tarefasExistentes.some(u =>
-                    u.topico === novaTarefa.topico &&
-                    u.data === novaTarefa.data &&
-                    u.tempo === novaTarefa.tempo
-                );
-
-                if (existe) {
-                    const exiMateria = new bootstrap.Modal(document.getElementById("exiMateriaMsg"));
-                    exiMateria.show();
-                    const exiMateriaBTN = document.getElementById("exiMateriaBTN");
-                    exiMateriaBTN.addEventListener("click", () => {
-                        window.location.reload();
-                    })
-                    return;
-                }
-
-                tarefasExistentes.push(novaTarefa);
-                localStorage.setItem("novaTarefa", JSON.stringify(tarefasExistentes));
-                this.mostraTarefa();
-                console.log(tarefasExistentes.tempo)
-
-            } catch (error) {
-                console.error("Erro ao enviar tarefa:", error);
+            if (novaMateria?.trim()) {
+                tarefas[index].materia = novaMateria.trim();
             }
-        },
+            if (novoTopico?.trim()) {
+                tarefas[index].topico = novoTopico.trim();
+            }
+            if (novaData) {
+                tarefas[index].data = novaData;
+            }
+            if (novoTempo) {
+                tarefas[index].tempo = novoTempo;
+            }
 
+            this.#salvarTarefas(tarefas);
+            
+            if (this.#validarCampos(tarefas[index])) {
+                modal.hide();
+            }
+            
+            this.mostrarTarefas();
+        });
+    }
 
-        mostraTarefa() {
-            console.log("mostrando tarefa");
-            this.listaTarefas.innerHTML = "";
+    excluirTarefa(index) {
+        const tarefas = this.#obterTarefas().filter(tarefa => tarefa);
+        tarefas.splice(index, 1);
+        this.#salvarTarefas(tarefas);
+    }
 
-            const tarefas = (JSON.parse(localStorage.getItem("novaTarefa")) || []).filter(user => user);
-            console.log(tarefas.tempo)
+    enviarTarefa() {
+        try {
+            console.log("Tarefa enviada");
+            const tarefasExistentes = this.#obterTarefas().filter(tarefa => tarefa);
+            const novaTarefa = this.tarefas;
 
-            tarefas.forEach((user, index) => {
-                const card = document.createElement("div");
-                card.className = "col-md-6";
+            if (!this.#validarCampos(novaTarefa)) {
+                this.#mostrarModal("campVazioMsg", "campVazioBTN");
+                return;
+            }
 
+            const existe = tarefasExistentes.some(tarefa =>
+                tarefa.topico === novaTarefa.topico &&
+                tarefa.data === novaTarefa.data &&
+                tarefa.tempo === novaTarefa.tempo
+            );
 
-                const cardContent = document.createElement("div");
-                cardContent.className = "card shadow-sm";
+            if (existe) {
+                this.#mostrarModal("exiMateriaMsg", "exiMateriaBTN");
+                return;
+            }
 
-                
-                const cardBody = document.createElement("div");
-                cardBody.className = "card-body";
+            tarefasExistentes.push(novaTarefa);
+            this.#salvarTarefas(tarefasExistentes);
+            this.mostrarTarefas();
+            
+            console.log("Tarefa adicionada:", novaTarefa);
+        } catch (error) {
+            console.error("Erro ao enviar tarefa:", error);
+        }
+    }
 
+    mostrarTarefas() {
+        console.log("Mostrando tarefas");
+        this.#listaTarefas.innerHTML = "";
+        const tarefas = this.#obterTarefas().filter(tarefa => tarefa);
 
-                const title = document.createElement("h5");
-                title.className = "card-title";
-                title.textContent = user.materia;
+        tarefas.forEach((tarefa, index) => {
+            const card = this.#criarCardTarefa(tarefa, index);
+            this.#listaTarefas.appendChild(card);
+        });
+    }
 
+    #criarCardTarefa(tarefa, index) {
+        const card = document.createElement("div");
+        card.className = "col-md-6";
 
-                const text = document.createElement("p");
-                text.className = "card-text";
-                text.innerHTML = `
-                    <strong>ID:</strong> ${index + 1}<br>
-                    <strong>Tópico:</strong> ${user.topico}<br>
-                    <strong>Data:</strong> ${user.data}<br>
-                    <strong>Tempo:</strong> ${user.tempo} min
-                `;
+        const cardContent = document.createElement("div");
+        cardContent.className = "card shadow-sm";
 
+        const cardBody = document.createElement("div");
+        cardBody.className = "card-body";
 
-                const buttonContainer = document.createElement("div");
-                buttonContainer.className = "d-flex justify-content-end gap-2";
+        const title = document.createElement("h5");
+        title.className = "card-title";
+        title.textContent = tarefa.materia;
 
+        const text = document.createElement("p");
+        text.className = "card-text";
+        text.innerHTML = `
+            <strong>ID:</strong> ${index + 1}<br>
+            <strong>Tópico:</strong> ${tarefa.topico}<br>
+            <strong>Data:</strong> ${tarefa.data}<br>
+            <strong>Tempo:</strong> ${tarefa.tempo} min
+        `;
 
-                const excluirBTN = document.createElement("button");
-                excluirBTN.className = "btn btn-danger";
-                excluirBTN.innerHTML = `<i class="bi bi-trash"></i> Excluir`;
+        const buttonContainer = this.#criarBotoesCard(index, card);
 
+        cardBody.appendChild(title);
+        cardBody.appendChild(text);
+        cardBody.appendChild(buttonContainer);
+        cardContent.appendChild(cardBody);
+        card.appendChild(cardContent);
 
-                excluirBTN.addEventListener("click", () => {
-                    card.classList.add("fade-out");
+        return card;
+    }
 
-                
-                    setTimeout(() => {
-                        this.excluirTarefa(index);
-                        this.listaTarefas.innerHTML = "";
-                        this.mostraTarefa();
-                    }, 400); // tempo da animação
-                });
+    #criarBotoesCard(index, card) {
+        const buttonContainer = document.createElement("div");
+        buttonContainer.className = "d-flex justify-content-end gap-2";
 
+        const excluirBTN = document.createElement("button");
+        excluirBTN.className = "btn btn-danger";
+        excluirBTN.innerHTML = `<i class="bi bi-trash"></i> Excluir`;
 
-                const editBTN = document.createElement("button");
-                editBTN.className = "btn btn-sm btn btn-primary";
-                editBTN.innerHTML = `<i class="bi bi-pencil"></i> Editar`;
+        excluirBTN.addEventListener("click", () => {
+            card.classList.add("fade-out");
+            setTimeout(() => {
+                this.excluirTarefa(index);
+                this.mostrarTarefas();
+            }, 400);
+        });
 
+        const editBTN = document.createElement("button");
+        editBTN.className = "btn btn-sm btn btn-primary";
+        editBTN.innerHTML = `<i class="bi bi-pencil"></i> Editar`;
 
-                editBTN.addEventListener("click", () => {
-                    this.editTarefa(index);
-                    this.listaTarefas.innerHTML = "";
-                    this.mostraTarefa();
+        editBTN.addEventListener("click", () => {
+            this.editarTarefa(index);
+        });
 
-                });
+        buttonContainer.appendChild(excluirBTN);
+        buttonContainer.appendChild(editBTN);
 
+        return buttonContainer;
+    }
 
-                buttonContainer.appendChild(excluirBTN);
-                buttonContainer.appendChild(editBTN);
-                cardBody.appendChild(title);
-                cardBody.appendChild(text);
-                cardBody.appendChild(buttonContainer);
-                cardContent.appendChild(cardBody);
-                card.appendChild(cardContent);
-                this.listaTarefas.appendChild(card);
-            });
-        },
-    };
-};
+    static criar(materia = "", topico = "", data = "", tempo = "") {
+        return new SistemaTarefas(materia, topico, data, tempo);
+    }
 
+    limparFormulario() {
+        document.getElementById("materia").value = "";
+        document.getElementById("topico").value = "";
+        document.getElementById("data").value = "";
+        document.getElementById("tempo").value = "";
+    }
+}
+
+// Instância global do sistema
+let sistemaTarefas;
 
 window.onload = () => {
-    criaMateria("", "", "", "").mostraTarefa();
+    sistemaTarefas = new SistemaTarefas();
+    sistemaTarefas.mostrarTarefas();
 };
 
+function _adicionar() {
+    const materia = document.getElementById("materia").value;
+    const topico = document.getElementById("topico").value;
+    const data = document.getElementById("data").value;
+    const tempo = document.getElementById("tempo").value;
 
-const adicionar = () => {
-    const m = document.getElementById("materia").value;
-    const t = document.getElementById("topico").value;
-    const d = document.getElementById("data").value;
-    const te = document.getElementById("tempo").value;
-
-
-    const newMateria = criaMateria(m, t, d, te);
-    newMateria.enviaTarefa();
-};
+    const novaTarefa = new SistemaTarefas(materia, topico, data, tempo);
+    novaTarefa.enviarTarefa();    
+    novaTarefa.limparFormulario();
+}
